@@ -59,21 +59,23 @@ int  RotaryEncoder::getPosition() {
 
 void RotaryEncoder::setPosition(int newPosition) {
   // only adjust the external part of the position.
-  _position = newPosition<<2 | (_position & 0x03);
+  
+  _position = ((newPosition<<2) | (_position & 0x03));
   _positionExt = newPosition;
+
 }
 
 void RotaryEncoder::tick(void)
 {
-  int sig1 = digitalRead(A2);
-  int sig2 = digitalRead(A3);
+  int sig1 = digitalRead(_pin1);
+  int sig2 = digitalRead(_pin2);
   int8_t thisState = sig1 | (sig2 << 1);
 
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState<<2)];
     
     if (thisState == LATCHSTATE)
-    _positionExt = _position >> 2;
+      _positionExt = _position >> 2;
     
     _oldState = thisState;
   } // if
