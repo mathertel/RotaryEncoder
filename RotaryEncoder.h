@@ -22,10 +22,10 @@ public:
   RotaryEncoder(int pin1, int pin2);
   
   // retrieve the current position
-  int  getPosition();
+  long  getPosition();
 
   // adjust the current position
-  void setPosition(int newPosition);
+  void setPosition(long newPosition);
 
   // call this function every some milliseconds or by using an interrupt for handling state changes of the rotary encoder.
   void tick(void);
@@ -35,8 +35,8 @@ private:
   
   int8_t _oldState;
   
-  int _position;     // Internal position (4 times _positionExt)
-  int _positionExt;  // External position
+  long _position;     // Internal position (4 times _positionExt)
+  long _positionExt;  // External position
 };
 
 #endif

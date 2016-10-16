@@ -6,6 +6,7 @@
 // More information on: http://www.mathertel.de/Arduino
 // -----
 // 18.01.2014 created by Matthias Hertel
+// 17.06.2015 minor updates.
 // -----
 
 #include "Arduino.h"
@@ -53,17 +54,17 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
 } // RotaryEncoder()
 
 
-int  RotaryEncoder::getPosition() {
+long  RotaryEncoder::getPosition() {
   return _positionExt;
-}
+} // getPosition()
 
-void RotaryEncoder::setPosition(int newPosition) {
+
+void RotaryEncoder::setPosition(long newPosition) {
   // only adjust the external part of the position.
-  
-  _position = ((newPosition<<2) | (_position & 0x03));
+  _position = ((newPosition<<2) | (_position & 0x03L));
   _positionExt = newPosition;
+} // setPosition()
 
-}
 
 void RotaryEncoder::tick(void)
 {
