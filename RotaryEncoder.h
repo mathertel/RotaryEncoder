@@ -23,6 +23,9 @@ public:
   
   // retrieve the current position
   long  getPosition();
+  
+  // simple retrieve of the direction the knob was rotated at. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
+  int8_t getDirection();
 
   // adjust the current position
   void setPosition(long newPosition);
@@ -33,10 +36,12 @@ public:
 private:
   int _pin1, _pin2; // Arduino pins used for the encoder. 
   
-  int8_t _oldState;
+  volatile int8_t _oldState;
   
-  long _position;     // Internal position (4 times _positionExt)
-  long _positionExt;  // External position
+  volatile long _position;         // Internal position (4 times _positionExt)
+  volatile long _positionExt;      // External position
+  volatile long _positionExtPrev;  // External position (used only for direction checking)
+
 };
 
 #endif
