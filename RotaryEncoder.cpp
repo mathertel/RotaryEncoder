@@ -51,6 +51,7 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
   // start with position 0;
   _position = 0;
   _positionExt = 0;
+  _positionExtPrev = 0;
 } // RotaryEncoder()
 
 
@@ -59,10 +60,36 @@ long  RotaryEncoder::getPosition() {
 } // getPosition()
 
 
+int8_t  RotaryEncoder::getDirection() {
+
+    int8_t ret = 0;
+    
+    if( _positionExtPrev > _positionExt )
+    {
+        ret = -1;
+        _positionExtPrev = _positionExt;
+    }
+    else if( _positionExtPrev < _positionExt )
+    {
+        ret = 1;
+        _positionExtPrev = _positionExt;
+    }
+    else 
+    {
+        ret = 0;
+        _positionExtPrev = _positionExt;
+    }        
+    
+    return ret;
+}
+
+
+
 void RotaryEncoder::setPosition(long newPosition) {
   // only adjust the external part of the position.
   _position = ((newPosition<<2) | (_position & 0x03L));
   _positionExt = newPosition;
+  _positionExtPrev = newPosition;
 } // setPosition()
 
 
