@@ -13,7 +13,7 @@
 #include "RotaryEncoder.h"
 
 
-// The array holds the values –1 for the entries where a position was decremented,
+// The array holds the values ï¿½1 for the entries where a position was decremented,
 // a 1 for the entries where the position was incremented
 // and 0 in all the other (no change or not valid) cases.
 
@@ -38,12 +38,9 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
   _pin1 = pin1;
   _pin2 = pin2;
   
-  // Setup the input pins
-  pinMode(pin1, INPUT);
-  digitalWrite(pin1, HIGH);   // turn on pullup resistor
-
-  pinMode(pin2, INPUT);
-  digitalWrite(pin2, HIGH);   // turn on pullup resistor
+  // Setup the input pins and turn on pullup resistor
+  pinMode(pin1, INPUT_PULLUP);
+  pinMode(pin2, INPUT_PULLUP);
 
   // when not started in motion, the current state of the encoder should be 3
   _oldState = 3;

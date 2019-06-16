@@ -6,6 +6,7 @@
 // More information on: http://www.mathertel.de/Arduino
 // -----
 // 18.01.2014 created by Matthias Hertel
+// 16.06.2019 pin initialization using INPUT_PULLUP
 // -----
 
 #ifndef RotaryEncoder_h
