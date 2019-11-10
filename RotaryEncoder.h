@@ -19,6 +19,8 @@
 class RotaryEncoder
 {
 public:
+  enum class Direction { NOROTATION = 0, CLOCKWISE = 1, COUNTERCLOCKWISE = 2};
+
   // ----- Constructor -----
   RotaryEncoder(int pin1, int pin2);
   
@@ -26,7 +28,7 @@ public:
   long  getPosition();
   
   // simple retrieve of the direction the knob was rotated at. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
-  int8_t getDirection();
+  Direction getDirection();
 
   // adjust the current position
   void setPosition(long newPosition);
