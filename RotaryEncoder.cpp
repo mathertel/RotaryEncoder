@@ -99,11 +99,20 @@ void RotaryEncoder::tick(void)
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState<<2)];
     
-    if (thisState == LATCHSTATE)
+    if (thisState == LATCHSTATE) {
       _positionExt = _position >> 2;
+      _positionExtTimePrev = _positionExtTime;
+      _positionExtTime = millis();
+    }
     
     _oldState = thisState;
   } // if
 } // tick()
+
+unsigned long RotaryEncoder::getMillisBetweenRotations() const
+{
+  return _positionExtTime - _positionExtTimePrev; 
+}
+
 
 // End

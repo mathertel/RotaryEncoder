@@ -36,6 +36,9 @@ public:
   // call this function every some milliseconds or by using an interrupt for handling state changes of the rotary encoder.
   void tick(void);
 
+  // Returns the time in milliseconds between the current observed 
+  unsigned long getMillisBetweenRotations() const;
+
 private:
   int _pin1, _pin2; // Arduino pins used for the encoder. 
   
@@ -45,6 +48,8 @@ private:
   volatile long _positionExt;      // External position
   volatile long _positionExtPrev;  // External position (used only for direction checking)
 
+  unsigned long _positionExtTime;     // The time the last position change was detected.
+  unsigned long _positionExtTimePrev; // The time the previous position change was detected.
 };
 
 #endif
