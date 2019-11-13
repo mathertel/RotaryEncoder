@@ -57,23 +57,23 @@ long  RotaryEncoder::getPosition() {
 } // getPosition()
 
 
-int8_t  RotaryEncoder::getDirection() {
+RotaryEncoder::Direction RotaryEncoder::getDirection() {
 
-    int8_t ret = 0;
+    RotaryEncoder::Direction ret = Direction::NOROTATION;
     
     if( _positionExtPrev > _positionExt )
     {
-        ret = -1;
+        ret = Direction::COUNTERCLOCKWISE;
         _positionExtPrev = _positionExt;
     }
     else if( _positionExtPrev < _positionExt )
     {
-        ret = 1;
+        ret = Direction::CLOCKWISE;
         _positionExtPrev = _positionExt;
     }
     else 
     {
-        ret = 0;
+        ret = Direction::NOROTATION;
         _positionExtPrev = _positionExt;
     }        
     
@@ -99,11 +99,20 @@ void RotaryEncoder::tick(void)
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState<<2)];
     
-    if (thisState == LATCHSTATE)
+    if (thisState == LATCHSTATE) {
       _positionExt = _position >> 2;
+      _positionExtTimePrev = _positionExtTime;
+      _positionExtTime = millis();
+    }
     
     _oldState = thisState;
   } // if
 } // tick()
+
+unsigned long RotaryEncoder::getMillisBetweenRotations() const
+{
+  return _positionExtTime - _positionExtTimePrev; 
+}
+
 
 // End
