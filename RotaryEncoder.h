@@ -19,6 +19,8 @@
 class RotaryEncoder
 {
 public:
+  enum class Direction { NOROTATION = 0, CLOCKWISE = 1, COUNTERCLOCKWISE = -1};
+
   // ----- Constructor -----
   RotaryEncoder(int pin1, int pin2);
   
@@ -26,13 +28,16 @@ public:
   long  getPosition();
   
   // simple retrieve of the direction the knob was rotated at. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
-  int8_t getDirection();
+  Direction getDirection();
 
   // adjust the current position
   void setPosition(long newPosition);
 
   // call this function every some milliseconds or by using an interrupt for handling state changes of the rotary encoder.
   void tick(void);
+
+  // Returns the time in milliseconds between the current observed 
+  unsigned long getMillisBetweenRotations() const;
 
 private:
   int _pin1, _pin2; // Arduino pins used for the encoder. 
@@ -43,6 +48,8 @@ private:
   volatile long _positionExt;      // External position
   volatile long _positionExtPrev;  // External position (used only for direction checking)
 
+  unsigned long _positionExtTime;     // The time the last position change was detected.
+  unsigned long _positionExtTimePrev; // The time the previous position change was detected.
 };
 
 #endif
