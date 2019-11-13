@@ -19,7 +19,7 @@
 class RotaryEncoder
 {
 public:
-  enum class Direction { NOROTATION = 0, CLOCKWISE = 1, COUNTERCLOCKWISE = 2};
+  enum class Direction { NOROTATION = 0, CLOCKWISE = 1, COUNTERCLOCKWISE = -1};
 
   // ----- Constructor -----
   RotaryEncoder(int pin1, int pin2);
