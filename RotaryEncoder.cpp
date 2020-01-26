@@ -8,9 +8,15 @@
 // 18.01.2014 created by Matthias Hertel
 // 17.06.2015 minor updates.
 // -----
+// 26.01.2020 Added Debounce functionality for the pus button. Based upon the Bounce library by Thomas Frederics https://playground.arduino.cc/Code/Bounce/
 
 #include "Arduino.h"
 #include "RotaryEncoder.h"
+
+//New
+
+
+//new
 
 
 // The array holds the values �1 for the entries where a position was decremented,
@@ -32,12 +38,12 @@ const int8_t KNOBDIR[] = {
 
 // ----- Initialization and Default Values -----
 
-RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
-  
+RotaryEncoder::RotaryEncoder(int pin1, int pin2, uint8_t buttonPin, unsigned long interval_millis) {
+
   // Remember Hardware Setup
   _pin1 = pin1;
   _pin2 = pin2;
-  
+
   // Setup the input pins and turn on pullup resistor
   pinMode(pin1, INPUT_PULLUP);
   pinMode(pin2, INPUT_PULLUP);
@@ -49,8 +55,42 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
   _position = 0;
   _positionExt = 0;
   _positionExtPrev = 0;
+
+// Push Button debounce
+
+  pinMode(buttonPin, INPUT_PULLUP);
+  interval(interval_millis);
+  previous_millis = millis();
+  state = digitalRead(buttonPin);
+    this->buttonPin = buttonPin;
+
+// End Push Button debounce
+
+
+
 } // RotaryEncoder()
 
+RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
+
+  // Remember Hardware Setup
+  _pin1 = pin1;
+  _pin2 = pin2;
+  //_buttonPin = buttonPin;
+
+  // Setup the input pins and turn on pullup resistor
+  pinMode(pin1, INPUT_PULLUP);
+  pinMode(pin2, INPUT_PULLUP);
+    // NEW ++++++++++++
+
+  // when not started in motion, the current state of the encoder should be 3
+  _oldState = 3;
+
+  // start with position 0;
+  _position = 0;
+  _positionExt = 0;
+  _positionExtPrev = 0;
+
+} // RotaryEncoder()
 
 long  RotaryEncoder::getPosition() {
   return _positionExt;
@@ -60,7 +100,7 @@ long  RotaryEncoder::getPosition() {
 RotaryEncoder::Direction RotaryEncoder::getDirection() {
 
     RotaryEncoder::Direction ret = Direction::NOROTATION;
-    
+
     if( _positionExtPrev > _positionExt )
     {
         ret = Direction::COUNTERCLOCKWISE;
@@ -71,12 +111,12 @@ RotaryEncoder::Direction RotaryEncoder::getDirection() {
         ret = Direction::CLOCKWISE;
         _positionExtPrev = _positionExt;
     }
-    else 
+    else
     {
         ret = Direction::NOROTATION;
         _positionExtPrev = _positionExt;
-    }        
-    
+    }
+
     return ret;
 }
 
@@ -98,21 +138,93 @@ void RotaryEncoder::tick(void)
 
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState<<2)];
-    
+
     if (thisState == LATCHSTATE) {
       _positionExt = _position >> 2;
       _positionExtTimePrev = _positionExtTime;
       _positionExtTime = millis();
     }
-    
+
     _oldState = thisState;
   } // if
 } // tick()
 
 unsigned long RotaryEncoder::getMillisBetweenRotations() const
 {
-  return _positionExtTime - _positionExtTimePrev; 
+  return _positionExtTime - _positionExtTimePrev;
 }
 
+
+// Push Button debounce
+
+void RotaryEncoder::write(int new_state)
+       {
+         this->state = new_state;
+        digitalWrite(buttonPin,state);
+       }
+
+
+void RotaryEncoder::interval(unsigned long interval_millis)
+{
+  this->interval_millis = interval_millis;
+  this->rebounce_millis = 0;
+}
+
+void RotaryEncoder::rebounce(unsigned long interval)
+{
+   this->rebounce_millis = interval;
+}
+
+
+
+int RotaryEncoder::update()
+{
+  if ( debounce() ) {
+        rebounce(0);
+        return stateChanged = 1;
+    }
+
+     // We need to rebounce, so simulate a state change
+
+  if ( rebounce_millis && (millis() - previous_millis >= rebounce_millis) ) {
+        previous_millis = millis();
+     rebounce(0);
+     return stateChanged = 1;
+  }
+
+  return stateChanged = 0;
+}
+
+
+unsigned long RotaryEncoder::duration()
+{
+  return millis() - previous_millis;
+}
+
+
+int RotaryEncoder::read()
+{
+  return (int)state;
+}
+
+
+// Protected: debounces the pin
+int RotaryEncoder::debounce() {
+
+  uint8_t newState = digitalRead(buttonPin);
+  if (state != newState ) {
+      if (millis() - previous_millis >= interval_millis) {
+        previous_millis = millis();
+        state = newState;
+        return 1;
+  }
+  }
+
+  return 0;
+
+}
+
+
+// End Push Button debounce
 
 // End
