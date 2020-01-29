@@ -1,0 +1,13 @@
+RotaryEncoder	KEYWORD1
+
+getPosition	KEYWORD2
+getDirection	KEYWORD2
+setPosition	KEYWORD2
+tick		KEYWORD2
+getMillisBetweenRotations	KEYWORD2
+interval	KEYWORD2
+update		KEYWORD2
+rebounce	KEYWORD2
+read		KEYWORD2
+write		KEYWORD2
+duration	KEYWORD2
