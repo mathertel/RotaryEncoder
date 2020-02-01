@@ -1,8 +1,12 @@
-See http://www.mathertel.de/License.aspx
-
 Software License Agreement (BSD License)
 
-Copyright (c) 2005-2014 by Matthias Hertel,  http://www.mathertel.de/
+
+* Copyright (c) 2020 by Felix Hauser
+
+* Copyright (c) 2005-2014 by Matthias Hertel,  http://www.mathertel.de/ - Original RotaryEncoder library - See http://www.mathertel.de/License.aspx
+
+* Copyright (c) 2013 by Thomas Ouellet Fredericks, Eric Lowry, Jim Schimpf and Tom Harkaway - https://github.com/thomasfredericks - Original Bounce library 
+
 
 All rights reserved.
 
