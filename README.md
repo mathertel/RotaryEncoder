@@ -1,16 +1,21 @@
-# BounceRotaryEncoder library
+# RotaryEncoder library
 
-This is a fork of the RotaryEncoder library by @mathertel which includes the debouncing functionallity for the push button.
-The debounce functionallity is based on the original Bounce library by Thomas Frederick.
+A library for the Arduino environment for using a rotary encoder as an input.
 
-* Original RotaryEncoder library: https://github.com/mathertel/RotaryEncoder
-* Original Bounce library: https://playground.arduino.cc/Code/Bounce/
+Here you can find an Arduino compatible library for using rotary encoders.
 
-# Why?
+I was searching a library for using a rotary encoder in my latest project and found a lot of information on this topic but none of the existing libraries did immediately match my expectations so I finally built my own.
 
-If you are working on a project with multiple push buttons, it makes sense to use any other library to manage the debouncing of said buttons. However if you are working on a small project in which you only need the push button of the encoder, you can use this library to manage that.
+It supports the type of rotary encoder that has a phase change on both input signals when rotating one `notch`.
 
-# How it works
+The article on my web site explains the software mechanisms used in detail so you can understand
+the coding and might be able to adjust it to your needs if you like:
 
-The best way to see how it works is to install the library and have a look at the examples. They are quite stright forward.
-The fork library is retro-compatible with the original RotaryEncoder library.
+<http://www.mathertel.de/Arduino/RotaryEncoderLibrary.aspx>
+
+There are various aspects when writing a library for rotary encoders and you can also find a lot of the sources I analysed at the bottom of this article.
+
+
+## updates
+
+* 26.01.2020 Added debounce functionality for the encoder's push button. Based on the Bounce library by Thomas Fredericks' Bounce library: https://playground.arduino.cc/Code/Bounce/
