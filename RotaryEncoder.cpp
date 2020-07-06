@@ -8,6 +8,8 @@
 // 18.01.2014 created by Matthias Hertel
 // 17.06.2015 minor updates.
 // -----
+// 26.01.2020 Added Debounce functionality for the pus button. Based upon the Bounce library by Thomas Frederics https://playground.arduino.cc/Code/Bounce/
+// 06.07.2020 Debounce is now opt-in by adding the following to the sketch: #define ky40btn_debounce
 
 #include "Arduino.h"
 #include "RotaryEncoder.h"
@@ -32,7 +34,11 @@ const int8_t KNOBDIR[] = {
 
 // ----- Initialization and Default Values -----
 
+#if defined ky40btn_debounce
+RotaryEncoder::RotaryEncoder(int pin1, int pin2, uint8_t buttonPin, unsigned long interval_millis) {
+#else
 RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
+#endif
   
   // Remember Hardware Setup
   _pin1 = pin1;
@@ -49,8 +55,43 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
   _position = 0;
   _positionExt = 0;
   _positionExtPrev = 0;
+
+  #if defined ky40btn_debounce  
+  // Push Button debounce
+
+  pinMode(buttonPin, INPUT_PULLUP);
+  interval(interval_millis);
+  previous_millis = millis();
+  state = digitalRead(buttonPin);
+    this->buttonPin = buttonPin;
+
+  // End Push Button debounce
+  #endif
 } // RotaryEncoder()
 
+#if defined ky40btn_debounce
+RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
+
+  // Remember Hardware Setup
+  _pin1 = pin1;
+  _pin2 = pin2;
+  //_buttonPin = buttonPin;
+
+  // Setup the input pins and turn on pullup resistor
+  pinMode(pin1, INPUT_PULLUP);
+  pinMode(pin2, INPUT_PULLUP);
+    // NEW ++++++++++++
+
+  // when not started in motion, the current state of the encoder should be 3
+  _oldState = 3;
+
+  // start with position 0;
+  _position = 0;
+  _positionExt = 0;
+  _positionExtPrev = 0;
+
+} // RotaryEncoder()
+#endif
 
 long  RotaryEncoder::getPosition() {
   return _positionExt;
@@ -114,5 +155,71 @@ unsigned long RotaryEncoder::getMillisBetweenRotations() const
   return _positionExtTime - _positionExtTimePrev; 
 }
 
+// Push Button debounce
+#if defined ky40btn_debounce
+void RotaryEncoder::write(int new_state)
+       {
+         this->state = new_state;
+        digitalWrite(buttonPin,state);
+       }
+
+
+void RotaryEncoder::interval(unsigned long interval_millis)
+{
+  this->interval_millis = interval_millis;
+  this->rebounce_millis = 0;
+}
+
+int RotaryEncoder::update()
+{
+  if ( debounce() ) {
+        rebounce(0);
+        return stateChanged = 1;
+    }
+
+     // We need to rebounce, so simulate a state change
+
+  if ( rebounce_millis && (millis() - previous_millis >= rebounce_millis) ) {
+        previous_millis = millis();
+     rebounce(0);
+     return stateChanged = 1;
+  }
+
+  return stateChanged = 0;
+}
+
+
+unsigned long RotaryEncoder::duration()
+{
+  return millis() - previous_millis;
+}
+
+
+int RotaryEncoder::read()
+{
+  return (int)state;
+}
+
+
+// Protected: debounces the pin
+int RotaryEncoder::debounce() {
+
+  uint8_t newState = digitalRead(buttonPin);
+  if (state != newState ) {
+      if (millis() - previous_millis >= interval_millis) {
+        previous_millis = millis();
+        state = newState;
+        return 1;
+  }
+  }
+
+  return 0;
+
+}
+
+
+// End Push Button debounce
+
+#endif
 
 // End
