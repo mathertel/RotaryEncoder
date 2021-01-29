@@ -26,8 +26,14 @@ public:
     COUNTERCLOCKWISE = -1
   };
 
+  enum class LatchMode {
+    FOUR3 = 1, // 4 steps, Latch at position 3 only (compatible to older versions)
+    FOUR0 = 2, // 4 steps, Latch at position 0 (reverse wirings)
+    TWO03 = 3  // 2 steps, Latch at position 0 and 3 
+  };
+
   // ----- Constructor -----
-  RotaryEncoder(int pin1, int pin2);
+  RotaryEncoder(int pin1, int pin2, LatchMode mode = LatchMode::FOUR0);
 
   // retrieve the current position
   long getPosition();
@@ -49,6 +55,8 @@ public:
 
 private:
   int _pin1, _pin2; // Arduino pins used for the encoder.
+  
+  LatchMode _mode; // Latch mode from initialization
 
   volatile int8_t _oldState;
 

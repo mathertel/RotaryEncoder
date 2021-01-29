@@ -9,8 +9,8 @@
 // 17.06.2015 minor updates.
 // -----
 
-#include "Arduino.h"
 #include "RotaryEncoder.h"
+#include "Arduino.h"
 
 
 // The array holds the values �1 for the entries where a position was decremented,
@@ -18,10 +18,10 @@
 // and 0 in all the other (no change or not valid) cases.
 
 const int8_t KNOBDIR[] = {
-  0, -1,  1,  0,
-  1,  0,  0, -1,
-  -1,  0,  0,  1,
-0,  1, -1,  0  };
+    0, -1, 1, 0,
+    1, 0, 0, -1,
+    -1, 0, 0, 1,
+    0, 1, -1, 0};
 
 
 // positions: [3] 1 0 2 [3] 1 0 2 [3]
@@ -32,11 +32,12 @@ const int8_t KNOBDIR[] = {
 
 // ----- Initialization and Default Values -----
 
-RotaryEncoder::RotaryEncoder(int pin1, int pin2)
+RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
 {
   // Remember Hardware Setup
   _pin1 = pin1;
   _pin2 = pin2;
+  _mode = mode;
 
   // Setup the input pins and turn on pullup resistor
   pinMode(pin1, INPUT_PULLUP);
@@ -93,14 +94,14 @@ void RotaryEncoder::tick(void)
   int8_t thisState = sig1 | (sig2 << 1);
 
   if (_oldState != thisState) {
-    _position += KNOBDIR[thisState | (_oldState<<2)];
-    
+    _position += KNOBDIR[thisState | (_oldState << 2)];
+
     if (thisState == LATCHSTATE) {
       _positionExt = _position >> 2;
       _positionExtTimePrev = _positionExtTime;
       _positionExtTime = millis();
     }
-    
+
     _oldState = thisState;
   } // if
 } // tick()
