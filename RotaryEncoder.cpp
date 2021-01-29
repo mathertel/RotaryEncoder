@@ -32,12 +32,12 @@ const int8_t KNOBDIR[] = {
 
 // ----- Initialization and Default Values -----
 
-RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
-  
+RotaryEncoder::RotaryEncoder(int pin1, int pin2)
+{
   // Remember Hardware Setup
   _pin1 = pin1;
   _pin2 = pin2;
-  
+
   // Setup the input pins and turn on pullup resistor
   pinMode(pin1, INPUT_PULLUP);
   pinMode(pin2, INPUT_PULLUP);
@@ -52,39 +52,35 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2) {
 } // RotaryEncoder()
 
 
-long  RotaryEncoder::getPosition() {
+long RotaryEncoder::getPosition()
+{
   return _positionExt;
 } // getPosition()
 
 
-RotaryEncoder::Direction RotaryEncoder::getDirection() {
+RotaryEncoder::Direction RotaryEncoder::getDirection()
+{
+  RotaryEncoder::Direction ret = Direction::NOROTATION;
 
-    RotaryEncoder::Direction ret = Direction::NOROTATION;
-    
-    if( _positionExtPrev > _positionExt )
-    {
-        ret = Direction::COUNTERCLOCKWISE;
-        _positionExtPrev = _positionExt;
-    }
-    else if( _positionExtPrev < _positionExt )
-    {
-        ret = Direction::CLOCKWISE;
-        _positionExtPrev = _positionExt;
-    }
-    else 
-    {
-        ret = Direction::NOROTATION;
-        _positionExtPrev = _positionExt;
-    }        
-    
-    return ret;
+  if (_positionExtPrev > _positionExt) {
+    ret = Direction::COUNTERCLOCKWISE;
+    _positionExtPrev = _positionExt;
+  } else if (_positionExtPrev < _positionExt) {
+    ret = Direction::CLOCKWISE;
+    _positionExtPrev = _positionExt;
+  } else {
+    ret = Direction::NOROTATION;
+    _positionExtPrev = _positionExt;
+  }
+
+  return ret;
 }
 
 
-
-void RotaryEncoder::setPosition(long newPosition) {
+void RotaryEncoder::setPosition(long newPosition)
+{
   // only adjust the external part of the position.
-  _position = ((newPosition<<2) | (_position & 0x03L));
+  _position = ((newPosition << 2) | (_position & 0x03L));
   _positionExt = newPosition;
   _positionExtPrev = newPosition;
 } // setPosition()
@@ -109,20 +105,19 @@ void RotaryEncoder::tick(void)
   } // if
 } // tick()
 
+
 unsigned long RotaryEncoder::getMillisBetweenRotations() const
 {
-  unsigned long TimeBetweenLastPosition = _positionExtTime - _positionExtTimePrev;
-  unsigned long LastPositionTime = millis() - _positionExtTime;
-  if (LastPositionTime > TimeBetweenLastPosition)
-  {
-    return LastPositionTime;
-  }
-  return TimeBetweenLastPosition;
+  return(_positionExtTime - _positionExtTimePrev);
 }
 
 unsigned long RotaryEncoder::getRPM()
 {
-  return 60000.0/((float)(getMillisBetweenRotations() * 20));
+  // calculate max of difference in time between last position changes or last change and now.
+  unsigned long timeBetweenLastPositions = _positionExtTime - _positionExtTimePrev;
+  unsigned long timeToLastPosition = millis() - _positionExtTime;
+  unsigned long t = max(timeBetweenLastPositions, timeToLastPosition);
+  return 60000.0 / ((float)(t * 20));
 }
 
 

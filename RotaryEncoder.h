@@ -7,6 +7,7 @@
 // -----
 // 18.01.2014 created by Matthias Hertel
 // 16.06.2019 pin initialization using INPUT_PULLUP
+// 10.11.2020 Added the ability to obtain the encoder RPM
 // -----
 
 #ifndef RotaryEncoder_h
@@ -19,14 +20,18 @@
 class RotaryEncoder
 {
 public:
-  enum class Direction { NOROTATION = 0, CLOCKWISE = 1, COUNTERCLOCKWISE = -1};
+  enum class Direction {
+    NOROTATION = 0,
+    CLOCKWISE = 1,
+    COUNTERCLOCKWISE = -1
+  };
 
   // ----- Constructor -----
   RotaryEncoder(int pin1, int pin2);
-  
+
   // retrieve the current position
-  long  getPosition();
-  
+  long getPosition();
+
   // simple retrieve of the direction the knob was rotated at. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
   Direction getDirection();
 
@@ -36,20 +41,20 @@ public:
   // call this function every some milliseconds or by using an interrupt for handling state changes of the rotary encoder.
   void tick(void);
 
-  // Returns the time in milliseconds between the current observed 
+  // Returns the time in milliseconds between the current observed
   unsigned long getMillisBetweenRotations() const;
 
   // Returns the RPM
   unsigned long getRPM();
 
 private:
-  int _pin1, _pin2; // Arduino pins used for the encoder. 
-  
+  int _pin1, _pin2; // Arduino pins used for the encoder.
+
   volatile int8_t _oldState;
-  
-  volatile long _position;         // Internal position (4 times _positionExt)
-  volatile long _positionExt;      // External position
-  volatile long _positionExtPrev;  // External position (used only for direction checking)
+
+  volatile long _position;        // Internal position (4 times _positionExt)
+  volatile long _positionExt;     // External position
+  volatile long _positionExtPrev; // External position (used only for direction checking)
 
   unsigned long _positionExtTime;     // The time the last position change was detected.
   unsigned long _positionExtTimePrev; // The time the previous position change was detected.
