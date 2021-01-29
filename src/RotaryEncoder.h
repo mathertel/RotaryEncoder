@@ -1,21 +1,24 @@
 // -----
 // RotaryEncoder.h - Library for using rotary encoders.
 // This class is implemented for use with the Arduino environment.
+//
 // Copyright (c) by Matthias Hertel, http://www.mathertel.de
-// This work is licensed under a BSD style license. See http://www.mathertel.de/License.aspx
+//
+// This work is licensed under a BSD 3-Clause style license,
+// https://www.mathertel.de/License.aspx.
+//
 // More information on: http://www.mathertel.de/Arduino
 // -----
 // 18.01.2014 created by Matthias Hertel
 // 16.06.2019 pin initialization using INPUT_PULLUP
 // 10.11.2020 Added the ability to obtain the encoder RPM
+// 29.01.2021 Options for using rotary encoders with 2 state changes per latch.
 // -----
 
 #ifndef RotaryEncoder_h
 #define RotaryEncoder_h
 
 #include "Arduino.h"
-
-#define LATCHSTATE 3
 
 class RotaryEncoder
 {

@@ -1,16 +1,22 @@
 // -----
 // RotaryEncoder.cpp - Library for using rotary encoders.
 // This class is implemented for use with the Arduino environment.
+//
 // Copyright (c) by Matthias Hertel, http://www.mathertel.de
-// This work is licensed under a BSD style license. See http://www.mathertel.de/License.aspx
+//
+// This work is licensed under a BSD 3-Clause style license,
+// https://www.mathertel.de/License.aspx.
+//
 // More information on: http://www.mathertel.de/Arduino
 // -----
-// 18.01.2014 created by Matthias Hertel
-// 17.06.2015 minor updates.
+// Changelog: see RotaryEncoder.h
 // -----
 
 #include "RotaryEncoder.h"
 #include "Arduino.h"
+
+#define LATCH0 0 // input state at position 0
+#define LATCH3 3 // input state at position 3
 
 
 // The array holds the values �1 for the entries where a position was decremented,
@@ -96,11 +102,34 @@ void RotaryEncoder::tick(void)
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState << 2)];
 
-    if (thisState == LATCHSTATE) {
-      _positionExt = _position >> 2;
-      _positionExtTimePrev = _positionExtTime;
-      _positionExtTime = millis();
-    }
+    switch (_mode) {
+    case LatchMode::FOUR3:
+      if (thisState == LATCH3) {
+        // The hardware has 4 steps with a latch on the input state 3
+        _positionExt = _position >> 2;
+        _positionExtTimePrev = _positionExtTime;
+        _positionExtTime = millis();
+      }
+      break;
+
+    case LatchMode::FOUR0:
+      if (thisState == LATCH0) {
+        // The hardware has 4 steps with a latch on the input state 0
+        _positionExt = _position >> 2;
+        _positionExtTimePrev = _positionExtTime;
+        _positionExtTime = millis();
+      }
+      break;
+
+    case LatchMode::TWO03:
+      if ((thisState == LATCH0) || (thisState == LATCH3)) {
+        // The hardware has 2 steps with a latch on the input state 0 and 3
+        _positionExt = _position >> 1;
+        _positionExtTimePrev = _positionExtTime;
+        _positionExtTime = millis();
+      }
+      break;
+    } // switch
 
     _oldState = thisState;
   } // if
@@ -109,7 +138,7 @@ void RotaryEncoder::tick(void)
 
 unsigned long RotaryEncoder::getMillisBetweenRotations() const
 {
-  return(_positionExtTime - _positionExtTimePrev);
+  return (_positionExtTime - _positionExtTimePrev);
 }
 
 unsigned long RotaryEncoder::getRPM()
