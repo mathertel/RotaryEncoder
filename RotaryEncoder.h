@@ -39,6 +39,9 @@ public:
   // Returns the time in milliseconds between the current observed 
   unsigned long getMillisBetweenRotations() const;
 
+  // Returns the RPM
+  unsigned long getRPM();
+
 private:
   int _pin1, _pin2; // Arduino pins used for the encoder. 
   

@@ -111,7 +111,18 @@ void RotaryEncoder::tick(void)
 
 unsigned long RotaryEncoder::getMillisBetweenRotations() const
 {
-  return _positionExtTime - _positionExtTimePrev; 
+  unsigned long TimeBetweenLastPosition = _positionExtTime - _positionExtTimePrev;
+  unsigned long LastPositionTime = millis() - _positionExtTime;
+  if (LastPositionTime > TimeBetweenLastPosition)
+  {
+    return LastPositionTime;
+  }
+  return TimeBetweenLastPosition;
+}
+
+unsigned long RotaryEncoder::getRPM()
+{
+  return 60000.0/((float)(getMillisBetweenRotations() * 20));
 }
 
 
