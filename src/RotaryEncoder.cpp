@@ -86,10 +86,23 @@ RotaryEncoder::Direction RotaryEncoder::getDirection()
 
 void RotaryEncoder::setPosition(long newPosition)
 {
-  // only adjust the external part of the position.
-  _position = ((newPosition << 2) | (_position & 0x03L));
-  _positionExt = newPosition;
-  _positionExtPrev = newPosition;
+  switch (_mode) {
+  case LatchMode::FOUR3:
+  case LatchMode::FOUR0:
+    // only adjust the external part of the position.
+    _position = ((newPosition << 2) | (_position & 0x03L));
+    _positionExt = newPosition;
+    _positionExtPrev = newPosition;
+    break;
+
+  case LatchMode::TWO03:
+    // only adjust the external part of the position.
+    _position = ((newPosition << 1) | (_position & 0x01L));
+    _positionExt = newPosition;
+    _positionExtPrev = newPosition;
+    break;
+  } // switch
+
 } // setPosition()
 
 
