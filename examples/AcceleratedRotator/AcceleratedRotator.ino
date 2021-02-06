@@ -101,6 +101,7 @@ void loop()
 
         newPos = newPos + deltaTicks;
         encoder.setPosition(newPos);
+        lastMovementDirection = currentDirection;
       }
     }
 
