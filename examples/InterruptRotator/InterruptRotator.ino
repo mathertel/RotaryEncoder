@@ -70,8 +70,8 @@ void setup()
   while (! Serial);
   Serial.println("InterruptRotator example for the RotaryEncoder library.");
 
-  attachInterrupt(PIN_IN1, checkPosition, CHANGE);
-  attachInterrupt(PIN_IN2, checkPosition, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(PIN_IN1), checkPosition, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(PIN_IN2), checkPosition, CHANGE);
 } // setup()
 
 
