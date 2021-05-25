@@ -144,9 +144,34 @@ void RotaryEncoder::tick(void)
       break;
     } // switch
 
+    //call the onChange function if it has been defined. 
+    if (_on_change_pos_dir  && _positionExt != _positionExtPrev)
+      _on_change_pos_dir(_positionExt, (int) getDirection());
+    if (_on_change_pointer_parameter && _positionExt != _positionExtPrev)
+      _on_change_pointer_parameter(_on_change_paramater);
+    if (_on_change_class_ref && _positionExt != _positionExtPrev)
+      _on_change_class_ref(*this);
+
     _oldState = thisState;
   } // if
 } // tick()
+
+void RotaryEncoder::attachOnChange(callbackFunctionPosDir on_change)
+{
+  _on_change_pos_dir = on_change;
+}
+
+void RotaryEncoder::attachOnChange(callbackFunctionClassRef on_change)
+{
+  _on_change_class_ref = on_change;
+}
+
+void RotaryEncoder::attachOnChange(callbackFunctionPointerParameter on_change, void * parameter)
+{
+  _on_change_pointer_parameter = on_change;
+  _on_change_paramater  = parameter;
+}
+
 
 
 unsigned long RotaryEncoder::getMillisBetweenRotations() const
