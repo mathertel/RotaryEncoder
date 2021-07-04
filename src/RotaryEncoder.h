@@ -41,7 +41,7 @@ public:
   // retrieve the current position
   long getPosition();
 
-  // simple retrieve of the direction the knob was rotated at. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
+  // simple retrieve of the direction the knob was rotated last time. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
   Direction getDirection();
 
   // adjust the current position

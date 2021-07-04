@@ -1,5 +1,5 @@
 // -----
-// SimplePollRotator.ino - Example for the RotaryEncoder library.
+// InterruptRotator.ino - Example for the RotaryEncoder library.
 // This class is implemented for use with the Arduino environment.
 //
 // Copyright (c) by Matthias Hertel, http://www.mathertel.de
@@ -8,6 +8,8 @@
 // -----
 // 18.01.2014 created by Matthias Hertel
 // 04.02.2021 conditions and settings added for ESP8266
+// 03.07.2022 avoid ESP8266 compiler warnings.
+// 03.07.2022 encoder instance not static.
 // -----
 
 // This example checks the state of the rotary encoder using interrupts and in the loop() function.
@@ -38,12 +40,9 @@
 
 #endif
 
-// Setup a RotaryEncoder with 4 steps per latch for the 2 signal input pins:
-// RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::FOUR3);
-
-// Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
-RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
-
+// A pointer to the dynamic created rotary encoder instance.
+// This will be done in setup()
+RotaryEncoder *encoder = nullptr;
 
 #if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO_EVERY)
 // This interrupt routine will be called on any change of one of the input signals
@@ -56,9 +55,9 @@ void checkPosition()
 /**
  * @brief The interrupt service routine will be called on any change of one of the input signals.
  */
-ICACHE_RAM_ATTR void checkPosition()
+IRAM_ATTR void checkPosition()
 {
-  encoder.tick(); // just call tick() to check the state.
+  encoder->tick(); // just call tick() to check the state.
 }
 
 #endif
@@ -67,11 +66,37 @@ ICACHE_RAM_ATTR void checkPosition()
 void setup()
 {
   Serial.begin(115200);
-  while (! Serial);
+  while (!Serial)
+    ;
   Serial.println("InterruptRotator example for the RotaryEncoder library.");
 
+  // setup the rotary encoder functionality
+
+  // use FOUR3 mode when PIN_IN1, PIN_IN2 signals are always HIGH in latch position.
+  // encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::FOUR3);
+
+  // use FOUR0 mode when PIN_IN1, PIN_IN2 signals are always LOW in latch position.
+  // encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::FOUR0);
+
+  // use TWO03 mode when PIN_IN1, PIN_IN2 signals are both LOW or HIGH in latch position.
+  encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
+
+  // register interrupt routine
   attachInterrupt(digitalPinToInterrupt(PIN_IN1), checkPosition, CHANGE);
   attachInterrupt(digitalPinToInterrupt(PIN_IN2), checkPosition, CHANGE);
+
+  pinMode(D1, OUTPUT);
+  digitalWrite(D1, LOW);
+  delay(100);
+  digitalWrite(D1, HIGH);
+  delay(100);
+  digitalWrite(D1, LOW);
+  delay(100);
+  digitalWrite(D1, HIGH);
+  delay(200);
+  digitalWrite(D1, LOW);
+  delay(100);
+
 } // setup()
 
 
@@ -79,14 +104,22 @@ void setup()
 void loop()
 {
   static int pos = 0;
-  encoder.tick();
 
-  int newPos = encoder.getPosition();
+  long p1 = encoder->getPosition();
+  encoder->tick(); // just call tick() to check the state.
+  long p2 = encoder->getPosition();
+  if (p1 != p2) {
+    digitalWrite(D1, ! digitalRead(D1));
+  }
+
+  // encoder->tick();
+
+  int newPos = encoder->getPosition();
   if (pos != newPos) {
     Serial.print("pos:");
     Serial.print(newPos);
     Serial.print(" dir:");
-    Serial.println((int)(encoder.getDirection()));
+    Serial.println((int)(encoder->getDirection()));
     pos = newPos;
   } // if
 } // loop ()

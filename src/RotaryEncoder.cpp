@@ -50,7 +50,9 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
   pinMode(pin2, INPUT_PULLUP);
 
   // when not started in motion, the current state of the encoder should be 3
-  _oldState = 3;
+  int sig1 = digitalRead(_pin1);
+  int sig2 = digitalRead(_pin2);
+  _oldState = sig1 | (sig2 << 1);
 
   // start with position 0;
   _position = 0;
@@ -114,6 +116,7 @@ void RotaryEncoder::tick(void)
 
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState << 2)];
+    _oldState = thisState;
 
     switch (_mode) {
     case LatchMode::FOUR3:
@@ -143,8 +146,6 @@ void RotaryEncoder::tick(void)
       }
       break;
     } // switch
-
-    _oldState = thisState;
   } // if
 } // tick()
 
