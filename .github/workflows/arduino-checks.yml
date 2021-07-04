@@ -18,7 +18,7 @@ jobs:
   lint:
     name: check library format
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: false
 
     steps:
       - uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
   compile-uno:
     name: compile uno examples
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: false
 
     steps:
       - uses: actions/checkout@v2
@@ -59,7 +59,7 @@ jobs:
   compile-esp8266:
     name: compile esp8266 examples
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: false
 
     steps:
       - uses: actions/checkout@v2
