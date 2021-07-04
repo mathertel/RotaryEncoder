@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file starting 2021.
 
+## [1.5.2] - 2021-07-04
+
+minor fixes found in ci integration.
+
+
 ## [1.5.1] - 2021-04-23
 
 FIX: attachInterrupt() with digitalPinToInterrupt() required for Arduino UNO etc.
