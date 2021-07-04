@@ -47,6 +47,7 @@ jobs:
           verbose: true
           fqbn: arduino:avr:uno
           libraries: |
+            - source-path: ./
             - name: LiquidCrystal_PCF8574
           sketch-paths: |
             - 'examples/SimplePollRotator'
@@ -75,6 +76,7 @@ jobs:
               version: 3.0.0
           fqbn: esp8266:esp8266:nodemcuv2
           libraries: |
+            - source-path: ./
             - name: LiquidCrystal_PCF8574
           sketch-paths: |
             - 'examples/SimplePollRotator'

@@ -116,7 +116,7 @@ void loop()
 // The Interrupt Service Routine for Pin Change Interrupt 1
 // This routine will only be called on any signal change on A2 and A3.
 // ISR(PCINT1_vect) {
-//   encoder.tick(); // just call tick() to check the state.
+//   encoder->tick(); // just call tick() to check the state.
 // }
 
 // The End
