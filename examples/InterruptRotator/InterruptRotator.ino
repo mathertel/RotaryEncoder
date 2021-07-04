@@ -48,7 +48,7 @@ RotaryEncoder *encoder = nullptr;
 // This interrupt routine will be called on any change of one of the input signals
 void checkPosition()
 {
-  encoder.tick(); // just call tick() to check the state.
+  encoder->tick(); // just call tick() to check the state.
 }
 
 #elif defined(ESP8266)
@@ -84,19 +84,6 @@ void setup()
   // register interrupt routine
   attachInterrupt(digitalPinToInterrupt(PIN_IN1), checkPosition, CHANGE);
   attachInterrupt(digitalPinToInterrupt(PIN_IN2), checkPosition, CHANGE);
-
-  pinMode(D1, OUTPUT);
-  digitalWrite(D1, LOW);
-  delay(100);
-  digitalWrite(D1, HIGH);
-  delay(100);
-  digitalWrite(D1, LOW);
-  delay(100);
-  digitalWrite(D1, HIGH);
-  delay(200);
-  digitalWrite(D1, LOW);
-  delay(100);
-
 } // setup()
 
 
@@ -105,14 +92,7 @@ void loop()
 {
   static int pos = 0;
 
-  long p1 = encoder->getPosition();
   encoder->tick(); // just call tick() to check the state.
-  long p2 = encoder->getPosition();
-  if (p1 != p2) {
-    digitalWrite(D1, ! digitalRead(D1));
-  }
-
-  // encoder->tick();
 
   int newPos = encoder->getPosition();
   if (pos != newPos) {
