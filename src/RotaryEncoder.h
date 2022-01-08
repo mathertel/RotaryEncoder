@@ -13,6 +13,7 @@
 // 16.06.2019 pin initialization using INPUT_PULLUP
 // 10.11.2020 Added the ability to obtain the encoder RPM
 // 29.01.2021 Options for using rotary encoders with 2 state changes per latch.
+// 28.12.2021 Added push switch and delay time; original code: https://gist.github.com/antwal/84dadfe67516cafa07d4c1c5204cbe40
 // -----
 
 #ifndef RotaryEncoder_h
@@ -35,14 +36,23 @@ public:
     TWO03 = 3  // 2 steps, Latch at position 0 and 3 
   };
 
+  enum class PushTime {
+    PUSHNO = 0,
+    PUSHSHORT = 1,
+    PUSHLONG = -1
+  };
+
   // ----- Constructor -----
   RotaryEncoder(int pin1, int pin2, LatchMode mode = LatchMode::FOUR0);
+  RotaryEncoder(int pin1, int pin2, int pushPin, LatchMode mode = LatchMode::TWO03);
 
   // retrieve the current position
   long getPosition();
 
   // simple retrieve of the direction the knob was rotated last time. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
   Direction getDirection();
+
+  PushTime getPushState();
 
   // adjust the current position
   void setPosition(long newPosition);
@@ -57,18 +67,23 @@ public:
   unsigned long getRPM();
 
 private:
-  int _pin1, _pin2; // Arduino pins used for the encoder.
+  int _pin1, _pin2, _pushPin;         // Arduino pins used for the encoder.
+  boolean _pushEnabled;               // Encoder Button State
   
-  LatchMode _mode; // Latch mode from initialization
+  LatchMode _mode;                    // Latch mode from initialization
 
   volatile int8_t _oldState;
 
-  volatile long _position;        // Internal position (4 times _positionExt)
-  volatile long _positionExt;     // External position
-  volatile long _positionExtPrev; // External position (used only for direction checking)
+  volatile long _position;            // Internal position (4 times _positionExt)
+  volatile long _positionExt;         // External position
+  volatile long _positionExtPrev;     // External position (used only for direction checking)
 
   unsigned long _positionExtTime;     // The time the last position change was detected.
   unsigned long _positionExtTimePrev; // The time the previous position change was detected.
+
+  volatile int8_t _lastStateSW;
+  volatile PushTime _pushTime;        // Button press state (short, long, nopress)
+  unsigned long _lastButtonPress;     // Button press time (short, long) in mills
 };
 
 #endif
