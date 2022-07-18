@@ -26,8 +26,8 @@
 
 #if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO_EVERY)
 // Example for Arduino UNO with input signals on pin 2 and 3
-#define PIN_IN1 2
-#define PIN_IN2 3
+#define PIN_IN1 A2
+#define PIN_IN2 A3
 
 #elif defined(ESP8266)
 // Example for ESP8266 NodeMCU with input signals on pin D5 and D6
