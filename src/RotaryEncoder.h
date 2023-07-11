@@ -20,6 +20,11 @@
 
 #include "Arduino.h"
 
+extern "C" {
+typedef void (*callbackFunction)(void);
+typedef void (*parameterizedCallbackFunction)(void *);
+}
+
 class RotaryEncoder
 {
 public:
@@ -40,6 +45,14 @@ public:
 
   // retrieve the current position
   long getPosition();
+
+  void attachTurnLeft(callbackFunction newFunction);
+
+  void attachTurnLeft(parameterizedCallbackFunction newFunction, void *parameter);
+
+  void attachTurnRight(callbackFunction newFunction);
+
+  void attachTurnRight(parameterizedCallbackFunction newFunction, void *parameter);
 
   // simple retrieve of the direction the knob was rotated last time. 0 = No rotation, 1 = Clockwise, -1 = Counter Clockwise
   Direction getDirection();
@@ -69,6 +82,14 @@ private:
 
   unsigned long _positionExtTime;     // The time the last position change was detected.
   unsigned long _positionExtTimePrev; // The time the previous position change was detected.
+
+  callbackFunction _turnRight = NULL;
+  parameterizedCallbackFunction _param_f_turnRight = NULL;
+  void *_turnRightFuncParam = NULL;
+
+  callbackFunction _turnLeft = NULL;
+  parameterizedCallbackFunction _param_f_turnLeft = NULL;
+  void *_turnLeftFuncParam = NULL;
 };
 
 #endif
