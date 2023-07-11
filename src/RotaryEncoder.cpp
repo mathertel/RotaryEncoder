@@ -60,6 +60,36 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
   _positionExtPrev = 0;
 } // RotaryEncoder()
 
+// save function for rotate event
+void RotaryEncoder::attachTurnLeft(callbackFunction newFunction)
+{
+  _turnLeft = newFunction;
+} // attachClick
+
+
+// save function for rotate event
+void RotaryEncoder::attachTurnRight(callbackFunction newFunction)
+{
+  _turnRight = newFunction;
+} // attachClick
+
+
+// save function for parameterized rotate_left event
+void RotaryEncoder::attachTurnLeft(parameterizedCallbackFunction newFunction, void *parameter)
+{
+  _param_f_turnLeft = newFunction;
+  _turnLeftFuncParam = parameter;
+} // attachClick
+
+
+// save function for parameterized rotate_right event
+void RotaryEncoder::attachTurnRight(parameterizedCallbackFunction newFunction, void *parameter)
+{
+  _param_f_turnRight = newFunction;
+  _turnRightFuncParam = parameter;
+} // attachClick
+
+
 
 long RotaryEncoder::getPosition()
 {
@@ -146,6 +176,22 @@ void RotaryEncoder::tick(void)
       }
       break;
     } // switch
+    
+    switch( getDirection() ) {
+
+        case Direction::NOROTATION: 
+          break;
+
+        case Direction::CLOCKWISE:
+          if (_turnRight) _turnRight();
+          if (_param_f_turnRight) _param_f_turnRight(_turnRightFuncParam); 
+          break;
+
+        case Direction::COUNTERCLOCKWISE:
+          if (_turnLeft) _turnLeft();
+          if (_param_f_turnLeft) _param_f_turnLeft(_turnLeftFuncParam); 
+          break;    
+    }
   } // if
 } // tick()
 
