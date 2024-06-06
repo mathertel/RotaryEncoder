@@ -14,6 +14,7 @@
 // 10.11.2020 Added the ability to obtain the encoder RPM
 // 29.01.2021 Options for using rotary encoders with 2 state changes per latch.
 // -----
+// 06.06.2024 Implementation of digitalFASTRead() possibility due to splitting up "tick()" function
 
 #ifndef RotaryEncoder_h
 #define RotaryEncoder_h
@@ -49,6 +50,7 @@ public:
 
   // call this function every some milliseconds or by using an interrupt for handling state changes of the rotary encoder.
   void tick(void);
+  void tick(int sig1, int sig2);
 
   // Returns the time in milliseconds between the current observed
   unsigned long getMillisBetweenRotations() const;
@@ -57,6 +59,8 @@ public:
   unsigned long getRPM();
 
 private:
+  void _tick(int _sig1, int _sig2); // Private internal tick function
+
   int _pin1, _pin2; // Arduino pins used for the encoder.
   
   LatchMode _mode; // Latch mode from initialization

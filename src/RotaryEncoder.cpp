@@ -109,10 +109,36 @@ void RotaryEncoder::setPosition(long newPosition)
 
 
 void RotaryEncoder::tick(void)
-{
+{ // Slow, but Simple Variant by directly Read-Out of the Digital State within loop-call
   int sig1 = digitalRead(_pin1);
   int sig2 = digitalRead(_pin2);
-  int8_t thisState = sig1 | (sig2 << 1);
+  _tick(sig1, sig2);
+
+} // tick()
+
+void RotaryEncoder::tick(int sig1, int sig2)
+{ // Possibility to make a fast call with digitalFASTRead() option and directly Register Readout
+  _tick(sig1, sig2);
+
+} // tick()
+
+
+unsigned long RotaryEncoder::getMillisBetweenRotations() const
+{
+  return (_positionExtTime - _positionExtTimePrev);
+}
+
+unsigned long RotaryEncoder::getRPM()
+{
+  // calculate max of difference in time between last position changes or last change and now.
+  unsigned long timeBetweenLastPositions = _positionExtTime - _positionExtTimePrev;
+  unsigned long timeToLastPosition = millis() - _positionExtTime;
+  unsigned long t = max(timeBetweenLastPositions, timeToLastPosition);
+  return 60000.0 / ((float)(t * 20));
+}
+
+void RotaryEncoder::_tick(int _sig1, int _sig2){
+  int8_t thisState = _sig1 | (_sig2 << 1);
 
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState << 2)];
@@ -147,22 +173,7 @@ void RotaryEncoder::tick(void)
       break;
     } // switch
   } // if
-} // tick()
-
-
-unsigned long RotaryEncoder::getMillisBetweenRotations() const
-{
-  return (_positionExtTime - _positionExtTimePrev);
-}
-
-unsigned long RotaryEncoder::getRPM()
-{
-  // calculate max of difference in time between last position changes or last change and now.
-  unsigned long timeBetweenLastPositions = _positionExtTime - _positionExtTimePrev;
-  unsigned long timeToLastPosition = millis() - _positionExtTime;
-  unsigned long t = max(timeBetweenLastPositions, timeToLastPosition);
-  return 60000.0 / ((float)(t * 20));
-}
+} // RotaryEncoder::_tick()
 
 
 // End
