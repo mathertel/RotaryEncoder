@@ -14,6 +14,7 @@
 
 #include "RotaryEncoder.h"
 #include "Arduino.h"
+#include <limits.h>
 
 #define LATCH0 0 // input state at position 0
 #define LATCH3 3 // input state at position 3
@@ -58,6 +59,10 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
   _position = 0;
   _positionExt = 0;
   _positionExtPrev = 0;
+
+  // set absolute min max limits of our storage type
+  _positionMin = LONG_MIN;
+  _positionMax = LONG_MAX;
 } // RotaryEncoder()
 
 
@@ -146,7 +151,15 @@ void RotaryEncoder::tick(void)
       }
       break;
     } // switch
+
+	 // apply limits
+    if (_positionExt < _positionMin) {
+      setPosition(_positionMin);
+    } else if (_positionExt > _positionMax) {
+      setPosition(_positionMax);
+    } // if
   } // if
+
 } // tick()
 
 
@@ -164,5 +177,22 @@ unsigned long RotaryEncoder::getRPM()
   return 60000.0 / ((float)(t * 20));
 }
 
+void RotaryEncoder::setPositionLimits(long min, long max)
+{
+  if (max < min) {
+    long temp = min;
+    min = max;
+    max = temp;
+  }
+
+  _positionMin = min;
+  _positionMax = max;
+
+  if (_positionExt < _positionMin) {
+    setPosition(_positionMin);
+  } else if (_positionExt > _positionMax) {
+    setPosition(_positionMax);
+  } // if
+} // setPositionLimits()
 
 // End
