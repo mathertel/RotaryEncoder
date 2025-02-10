@@ -56,9 +56,12 @@ public:
   // Returns the RPM
   unsigned long getRPM();
 
+  // Set min and max value of position
+  void setPositionLimits(long min, long max);
+
 private:
   int _pin1, _pin2; // Arduino pins used for the encoder.
-  
+
   LatchMode _mode; // Latch mode from initialization
 
   volatile int8_t _oldState;
@@ -69,6 +72,9 @@ private:
 
   unsigned long _positionExtTime;     // The time the last position change was detected.
   unsigned long _positionExtTimePrev; // The time the previous position change was detected.
+
+  long _positionMin;
+  long _positionMax;
 };
 
 #endif
