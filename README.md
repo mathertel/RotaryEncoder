@@ -1,6 +1,7 @@
 # RotaryEncoder library
 
 [![Arduino Library Checks](https://github.com/mathertel/RotaryEncoder/actions/workflows/arduino-checks.yml/badge.svg)](https://github.com/mathertel/RotaryEncoder/actions/workflows/arduino-checks.yml)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/mathertel/RotaryEncoder)
 
 A library for the Arduino environment for using a rotary encoder as an input.
 
