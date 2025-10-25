@@ -13,6 +13,7 @@
 // 16.06.2019 pin initialization using INPUT_PULLUP
 // 10.11.2020 Added the ability to obtain the encoder RPM
 // 29.01.2021 Options for using rotary encoders with 2 state changes per latch.
+// 06.06.2024 Implementation of tick() with passing the input values for more performant implementations.
 // -----
 
 #ifndef RotaryEncoder_h
@@ -48,7 +49,12 @@ public:
   void setPosition(long newPosition);
 
   // call this function every some milliseconds or by using an interrupt for handling state changes of the rotary encoder.
+  // This method uses the standard Arduino digitalRead() function with the 2 pins provided in the class creation.
   void tick(void);
+
+  // Use this tick variant when a faster method than digitalRead is available and provide the values directly.
+  // The 2 pins provided in the class creation are ignored.
+  void tick(int sig1, int sig2);
 
   // Returns the time in milliseconds between the current observed
   unsigned long getMillisBetweenRotations() const;
