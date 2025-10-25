@@ -40,6 +40,9 @@ const int8_t KNOBDIR[] = {
 
 RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
 {
+  int sig1 = 0;
+  int sig2 = 0;
+
   // Remember Hardware Setup
   _pin1 = pin1;
   _pin2 = pin2;
@@ -50,8 +53,8 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
     pinMode(pin1, INPUT_PULLUP);
     pinMode(pin2, INPUT_PULLUP);
     // when not started in motion, the current state of the encoder should be 3
-    int sig1 = digitalRead(_pin1);
-    int sig2 = digitalRead(_pin2);
+    sig1 = digitalRead(_pin1);
+    sig2 = digitalRead(_pin2);
   }
   
   _oldState = sig1 | (sig2 << 1);
@@ -113,7 +116,6 @@ void RotaryEncoder::setPosition(long newPosition)
 // Slow, but Simple Variant by directly Read-Out of the Digital State within loop-call
 void RotaryEncoder::tick(void)
 {
-  unsigned long now = millis();
   int sig1 = digitalRead(_pin1);
   int sig2 = digitalRead(_pin2);
   tick(sig1, sig2);
@@ -122,6 +124,7 @@ void RotaryEncoder::tick(void)
 // When a faster method than digitalRead is available you can _tick with the 2 values directly.
 void RotaryEncoder::tick(int sig1, int sig2)
 { 
+  unsigned long now = millis();
   int8_t thisState = sig1 | (sig2 << 1);
 
   if (_oldState != thisState) {
