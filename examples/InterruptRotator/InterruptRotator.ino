@@ -39,7 +39,7 @@
 #define PIN_IN2 D6
 
 #elif defined(ESP32)
-// Example for ESP8266 NodeMCU with input signals on pin D5 and D6
+// Example for ESP32 with input signals on pins 35 and 37
 #define PIN_IN1 35
 #define PIN_IN2 37
 #endif
