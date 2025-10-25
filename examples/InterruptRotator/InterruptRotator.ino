@@ -38,6 +38,10 @@
 #define PIN_IN1 D5
 #define PIN_IN2 D6
 
+#elif defined(ESP32)
+// Example for ESP32 with input signals on pins 35 and 37
+#define PIN_IN1 35
+#define PIN_IN2 37
 #endif
 
 // A pointer to the dynamic created rotary encoder instance.
@@ -51,7 +55,7 @@ void checkPosition()
   encoder->tick(); // just call tick() to check the state.
 }
 
-#elif defined(ESP8266)
+#elif defined(ESP8266) || defined(ESP32)
 /**
  * @brief The interrupt service routine will be called on any change of one of the input signals.
  */
