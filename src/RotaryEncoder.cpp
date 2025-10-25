@@ -46,14 +46,16 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
   _mode = mode;
 
   // Setup the input pins and turn on pullup resistor
-  pinMode(pin1, INPUT_PULLUP);
-  pinMode(pin2, INPUT_PULLUP);
-
-  // when not started in motion, the current state of the encoder should be 3
-  int sig1 = digitalRead(_pin1);
-  int sig2 = digitalRead(_pin2);
+  if ((pin1 >= 0) && (pin2 >= 0)) {
+    pinMode(pin1, INPUT_PULLUP);
+    pinMode(pin2, INPUT_PULLUP);
+    // when not started in motion, the current state of the encoder should be 3
+    int sig1 = digitalRead(_pin1);
+    int sig2 = digitalRead(_pin2);
+  }
+  
   _oldState = sig1 | (sig2 << 1);
-
+  
   // start with position 0;
   _position = 0;
   _positionExt = 0;
@@ -108,37 +110,18 @@ void RotaryEncoder::setPosition(long newPosition)
 } // setPosition()
 
 
+// Slow, but Simple Variant by directly Read-Out of the Digital State within loop-call
 void RotaryEncoder::tick(void)
-{ // Slow, but Simple Variant by directly Read-Out of the Digital State within loop-call
+{
   int sig1 = digitalRead(_pin1);
   int sig2 = digitalRead(_pin2);
-  _tick(sig1, sig2);
-
+  tick(sig1, sig2);
 } // tick()
 
+// When a faster method than digitalRead is available you can _tick with the 2 values directly.
 void RotaryEncoder::tick(int sig1, int sig2)
-{ // Possibility to make a fast call with digitalFASTRead() option and directly Register Readout
-  _tick(sig1, sig2);
-
-} // tick()
-
-
-unsigned long RotaryEncoder::getMillisBetweenRotations() const
-{
-  return (_positionExtTime - _positionExtTimePrev);
-}
-
-unsigned long RotaryEncoder::getRPM()
-{
-  // calculate max of difference in time between last position changes or last change and now.
-  unsigned long timeBetweenLastPositions = _positionExtTime - _positionExtTimePrev;
-  unsigned long timeToLastPosition = millis() - _positionExtTime;
-  unsigned long t = max(timeBetweenLastPositions, timeToLastPosition);
-  return 60000.0 / ((float)(t * 20));
-}
-
-void RotaryEncoder::_tick(int _sig1, int _sig2){
-  int8_t thisState = _sig1 | (_sig2 << 1);
+{ 
+  int8_t thisState = sig1 | (sig2 << 1);
 
   if (_oldState != thisState) {
     _position += KNOBDIR[thisState | (_oldState << 2)];
@@ -173,7 +156,22 @@ void RotaryEncoder::_tick(int _sig1, int _sig2){
       break;
     } // switch
   } // if
-} // RotaryEncoder::_tick()
+} // tick()
+
+
+unsigned long RotaryEncoder::getMillisBetweenRotations() const
+{
+  return (_positionExtTime - _positionExtTimePrev);
+}
+
+unsigned long RotaryEncoder::getRPM()
+{
+  // calculate max of difference in time between last position changes or last change and now.
+  unsigned long timeBetweenLastPositions = _positionExtTime - _positionExtTimePrev;
+  unsigned long timeToLastPosition = millis() - _positionExtTime;
+  unsigned long t = max(timeBetweenLastPositions, timeToLastPosition);
+  return 60000.0 / ((float)(t * 20));
+}
 
 
 // End
