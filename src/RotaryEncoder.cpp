@@ -110,6 +110,7 @@ void RotaryEncoder::setPosition(long newPosition)
 
 void RotaryEncoder::tick(void)
 {
+  unsigned long now = millis();
   int sig1 = digitalRead(_pin1);
   int sig2 = digitalRead(_pin2);
   int8_t thisState = sig1 | (sig2 << 1);
@@ -124,7 +125,7 @@ void RotaryEncoder::tick(void)
         // The hardware has 4 steps with a latch on the input state 3
         _positionExt = _position >> 2;
         _positionExtTimePrev = _positionExtTime;
-        _positionExtTime = millis();
+        _positionExtTime = now;
       }
       break;
 
@@ -133,7 +134,7 @@ void RotaryEncoder::tick(void)
         // The hardware has 4 steps with a latch on the input state 0
         _positionExt = _position >> 2;
         _positionExtTimePrev = _positionExtTime;
-        _positionExtTime = millis();
+        _positionExtTime = now;
       }
       break;
 
@@ -142,7 +143,7 @@ void RotaryEncoder::tick(void)
         // The hardware has 2 steps with a latch on the input state 0 and 3
         _positionExt = _position >> 1;
         _positionExtTimePrev = _positionExtTime;
-        _positionExtTime = millis();
+        _positionExtTime = now;
       }
       break;
     } // switch
