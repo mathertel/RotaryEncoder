@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file starting 2021.
 
+## [1.6.0] -- 2025-10-25
+
+* New since 1.5.2
+
+  * ADD: Optional debounce support (setDebounceMillis()) to filter contact bounce without external components.
+  * ADD: New example sketches: RotaryWithButton and AcceleratedRotatorAdvanced (showing debounce and acceleration together).
+  * CI: Expanded unit/integration tests and updated CI configuration for newer Arduino cores and PlatformIO.
+  * DOCS: Updated README and examples for IDE 2.x and core compatibility; clarified LatchMode behavior.
+
+* Fixes and improvements since 1.5.2
+
+  * FIX: Robust interrupt handling across cores (AVR, SAMD, ESP32, ESP8266) — consistent use of digitalPinToInterrupt() and edge configuration to avoid missed steps on non‑AVR boards.
+  * FIX: Race conditions when reading counts from ISR — atomic access and reduced critical sections.
+  * FIX: Reduced CPU usage in ISR and polling paths (lower interrupt overhead).
+  * CHANGE: Improved API stability notes and migration guide in README.
+
+
 ## [1.5.2] - 2021-07-04
 
 minor fixes found in ci integration.
