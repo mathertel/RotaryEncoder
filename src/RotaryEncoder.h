@@ -20,6 +20,30 @@
 #define RotaryEncoder_h
 
 #include "Arduino.h"
+#include <Adafruit_MCP23XXX.h>
+
+class InputProvider
+{
+public:
+  virtual void pinMode(uint8_t pin, uint8_t mode) = 0;
+  virtual int digitalRead(uint8_t pin) = 0;
+};
+
+class BuiltInInputProvider : public InputProvider
+{
+public:
+  void pinMode(uint8_t pin, uint8_t mode);
+  int digitalRead(uint8_t pin);
+};
+
+class MCP23XXXInputProvider : public InputProvider
+{
+public:
+  MCP23XXXInputProvider(Adafruit_MCP23XXX *mcp);
+  Adafruit_MCP23XXX *mcp;
+  void pinMode(uint8_t pin, uint8_t mode);
+  int digitalRead(uint8_t pin);
+};
 
 class RotaryEncoder
 {
@@ -37,6 +61,8 @@ public:
   };
 
   // ----- Constructor -----
+  RotaryEncoder(InputProvider *provider, int pin1, int pin2, LatchMode mode = LatchMode::FOUR0);
+  RotaryEncoder(Adafruit_MCP23XXX *mcp, int pin1, int pin2, LatchMode mode = LatchMode::FOUR0);
   RotaryEncoder(int pin1, int pin2, LatchMode mode = LatchMode::FOUR0);
 
   // retrieve the current position
@@ -75,6 +101,8 @@ private:
 
   unsigned long _positionExtTime;     // The time the last position change was detected.
   unsigned long _positionExtTimePrev; // The time the previous position change was detected.
+
+  InputProvider *provider;
 };
 
 #endif
