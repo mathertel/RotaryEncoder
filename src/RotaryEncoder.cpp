@@ -15,6 +15,31 @@
 #include "RotaryEncoder.h"
 #include "Arduino.h"
 
+void BuiltInInputProvider::pinMode(uint8_t pin, uint8_t mode)
+{
+  pinMode(pin, mode);
+}
+
+int BuiltInInputProvider::digitalRead(uint8_t pin)
+{
+  return digitalRead(pin);
+}
+
+MCP23XXXInputProvider::MCP23XXXInputProvider(Adafruit_MCP23XXX *mcp)
+{
+  this->mcp = mcp;
+}
+
+void MCP23XXXInputProvider::pinMode(uint8_t pin, uint8_t mode)
+{
+  this->mcp->pinMode(pin, mode);
+}
+
+int MCP23XXXInputProvider::digitalRead(uint8_t pin)
+{
+  return this->mcp->digitalRead(pin);
+}
+
 #define LATCH0 0 // input state at position 0
 #define LATCH3 3 // input state at position 3
 
@@ -38,8 +63,10 @@ const int8_t KNOBDIR[] = {
 
 // ----- Initialization and Default Values -----
 
-RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
+RotaryEncoder::RotaryEncoder(InputProvider *provider, int pin1, int pin2, LatchMode mode = LatchMode::FOUR0)
 {
+  this->provider = provider;
+
   int sig1 = 0;
   int sig2 = 0;
 
@@ -50,11 +77,11 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
 
   // Setup the input pins and turn on pullup resistor
   if ((pin1 >= 0) && (pin2 >= 0)) {
-    pinMode(pin1, INPUT_PULLUP);
-    pinMode(pin2, INPUT_PULLUP);
+    this->provider->pinMode(pin1, INPUT_PULLUP);
+    this->provider->pinMode(pin2, INPUT_PULLUP);
     // when not started in motion, the current state of the encoder should be 3
-    sig1 = digitalRead(_pin1);
-    sig2 = digitalRead(_pin2);
+    sig1 = this->provider->digitalRead(_pin1);
+    sig2 = this->provider->digitalRead(_pin2);
   }
   
   _oldState = sig1 | (sig2 << 1);
@@ -65,6 +92,10 @@ RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode)
   _positionExtPrev = 0;
 } // RotaryEncoder()
 
+
+RotaryEncoder::RotaryEncoder(int pin1, int pin2, LatchMode mode = LatchMode::FOUR0) : RotaryEncoder(new BuiltInInputProvider(), pin1, pin2, mode) {}
+
+RotaryEncoder::RotaryEncoder(Adafruit_MCP23XXX *mcp, int pin1, int pin2, LatchMode mode = LatchMode::FOUR0) : RotaryEncoder(new MCP23XXXInputProvider(mcp), pin1, pin2, mode) {}
 
 long RotaryEncoder::getPosition()
 {
@@ -116,8 +147,8 @@ void RotaryEncoder::setPosition(long newPosition)
 // Slow, but Simple Variant by directly Read-Out of the Digital State within loop-call
 void RotaryEncoder::tick(void)
 {
-  int sig1 = digitalRead(_pin1);
-  int sig2 = digitalRead(_pin2);
+  int sig1 = this->provider->digitalRead(_pin1);
+  int sig2 = this->provider->digitalRead(_pin2);
   tick(sig1, sig2);
 } // tick()
 
