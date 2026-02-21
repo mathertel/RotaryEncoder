@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file starting 2021.
 
-## [1.6.0] -- 2025-10-25
+## [1.6.0] -- 2026-02-21
+
+* Added inline documentation to `RotaryEncoder.cpp` explaining encoder initialization and tick processing
+* New constructor `RotaryEncoder(LatchMode mode)` for software-only initialization without hardware pin configuration.
+* See pull request #45 and #47
 
 * New since 1.5.2
 
@@ -10,6 +14,7 @@ All notable changes to this project will be documented in this file starting 202
   * ADD: New example sketches: RotaryWithButton and AcceleratedRotatorAdvanced (showing debounce and acceleration together).
   * CI: Expanded unit/integration tests and updated CI configuration for newer Arduino cores and PlatformIO.
   * DOCS: Updated README and examples for IDE 2.x and core compatibility; clarified LatchMode behavior.
+  * Added ESP32 support with default pins in examples
 
 * Fixes and improvements since 1.5.2
 
@@ -18,6 +23,7 @@ All notable changes to this project will be documented in this file starting 202
   * FIX: Reduced CPU usage in ISR and polling paths (lower interrupt overhead).
   * CHANGE: Improved API stability notes and migration guide in README.
 
+* copilot-instructions.md added
 
 ## [1.5.2] - 2021-07-04
 

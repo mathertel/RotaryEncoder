@@ -14,6 +14,7 @@
 // 10.11.2020 Added the ability to obtain the encoder RPM
 // 29.01.2021 Options for using rotary encoders with 2 state changes per latch.
 // 06.06.2024 Implementation of tick() with passing the input values for more performant implementations.
+// 21.02.2025 Documentation and Constructor without hardware initialization added.
 // -----
 
 #ifndef RotaryEncoder_h
@@ -21,8 +22,11 @@
 
 #include "Arduino.h"
 
-class RotaryEncoder
-{
+#ifndef NO_PIN
+#define NO_PIN -1
+#endif
+
+class RotaryEncoder {
 public:
   enum class Direction {
     NOROTATION = 0,
@@ -31,12 +35,28 @@ public:
   };
 
   enum class LatchMode {
-    FOUR3 = 1, // 4 steps, Latch at position 3 only (compatible to older versions)
-    FOUR0 = 2, // 4 steps, Latch at position 0 (reverse wirings)
-    TWO03 = 3  // 2 steps, Latch at position 0 and 3 
+    FOUR3 = 1,  // 4 steps, Latch at position 3 only (compatible to older versions)
+    FOUR0 = 2,  // 4 steps, Latch at position 0 (reverse wirings)
+    TWO03 = 3   // 2 steps, Latch at position 0 and 3
   };
 
-  // ----- Constructor -----
+  // Constructor that initializes the RotaryEncoder without hardware setup.
+  RotaryEncoder(LatchMode mode = LatchMode::FOUR0);
+
+  /**
+   * @brief Constructor that initializes the RotaryEncoder with hardware pin setup.
+   *
+   * This constructor creates a RotaryEncoder instance with full default hardware initialization.
+   * It configures the specified pins, enables internal pull-up resistors, and reads their
+   * current state to establish the initial encoder position.
+   *
+   * @param pin1 First encoder pin (typically pin A). Use a value 0 or greater for a valid pin.
+   *             A negative value or NO_PIN will skip hardware configuration.
+   * @param pin2 Second encoder pin (typically pin B). Use a value 0 or greater for a valid pin.
+   *             A negative value or NO_PIN will skip hardware configuration.
+   * @param mode The latch mode defining the encoder sensitivity.
+   *   See RotaryEncoder.h for details on the available modes.
+   */
   RotaryEncoder(int pin1, int pin2, LatchMode mode = LatchMode::FOUR0);
 
   // retrieve the current position
@@ -63,18 +83,18 @@ public:
   unsigned long getRPM();
 
 private:
-  int _pin1, _pin2; // Arduino pins used for the encoder.
-  
-  LatchMode _mode; // Latch mode from initialization
+  int _pin1, _pin2;  // Arduino pins used for the encoder.
+
+  LatchMode _mode;  // Latch mode from initialization
 
   volatile int8_t _oldState;
 
-  volatile long _position;        // Internal position (4 times _positionExt)
-  volatile long _positionExt;     // External position
-  volatile long _positionExtPrev; // External position (used only for direction checking)
+  volatile long _position;         // Internal position (4 times _positionExt)
+  volatile long _positionExt;      // External position
+  volatile long _positionExtPrev;  // External position (used only for direction checking)
 
-  unsigned long _positionExtTime;     // The time the last position change was detected.
-  unsigned long _positionExtTimePrev; // The time the previous position change was detected.
+  unsigned long _positionExtTime;      // The time the last position change was detected.
+  unsigned long _positionExtTimePrev;  // The time the previous position change was detected.
 };
 
 #endif
